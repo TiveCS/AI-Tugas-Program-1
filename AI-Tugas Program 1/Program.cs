@@ -58,6 +58,11 @@ namespace AI_Tugas_Program_1
 
 				return result;
 			}
+
+			public override string ToString()
+			{
+				return $"{Nama}: ({Kordinat.X}, {Kordinat.Y})";
+			}
 		}
 		
 		// MAIN-MAIN
@@ -67,7 +72,7 @@ namespace AI_Tugas_Program_1
 			int n = Int32.Parse(input);
 
 			List<Tabel> tabels = GenerateListTabel(n);
-
+			
 			GenerateFileTable(n, tabels);
 			GenerateFileRelation(n, tabels);
 		}
@@ -78,9 +83,16 @@ namespace AI_Tugas_Program_1
 		{
 			Random random = new Random();
 			int num = random.Next(0, 200);
+
 			int leftover = num % 5;
 
-			num += leftover;
+			int difference = 0;
+			if (leftover > 0)
+			{
+				difference = 5 - leftover;
+			}
+
+			num += difference;
 
 			return num;
 		}
