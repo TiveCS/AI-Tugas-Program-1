@@ -65,6 +65,23 @@ namespace AI_Tugas_Program_1
 			}
 		}
 		
+		class Relasi
+        {
+
+            public string Nama { get; set; }
+
+            public Tabel Tabel1 { get; set; }
+
+            public Tabel Tabel2 { get; set; }
+
+			public Relasi(string nama, Tabel tabel1, Tabel tabel2)
+			{
+				Nama = nama;
+				Tabel1 = tabel1;
+				Tabel2 = tabel2;
+			}
+        }
+
 		// MAIN-MAIN
 		static void Main(string[] args)
 		{
@@ -73,9 +90,10 @@ namespace AI_Tugas_Program_1
 			int n = Int32.Parse(input);
 
 			List<Tabel> tabels = GenerateListTabel(n);
-			
+			List<Relasi> relasis = GenerateListRelasi(n, tabels);
+
 			GenerateFileTable(n, tabels);
-			GenerateFileRelation(n, tabels);
+			GenerateFileRelation(n, relasis);
 		}
 
 		static void Menu()
@@ -156,6 +174,7 @@ namespace AI_Tugas_Program_1
 			for (int j = 0; j < n; j++)
 			{
 				string label = $"Tabel_{j + 1}";
+				string[] subs = label.Split(' ');
 				Tabel t = new Tabel(label, GenerateNumberMultipleFive(), GenerateNumberMultipleFive());
 
 				list.Add(t);
@@ -191,10 +210,58 @@ namespace AI_Tugas_Program_1
 
 		}
 
-		static void GenerateFileRelation(int n, List<Tabel> tabels)
+		static List<Relasi> GenerateListRelasi(int n, List<Tabel> tabels)
 		{
-			var file = new FileInfo(DirectoryFolder + "/Table.xls");
+			List<Relasi> relasis = new List<Relasi>();
+			Random random = new Random();
 
+			for (int i = 0; i < n; i++)
+			{
+				int t1 = random.Next(0, n), t2 = random.Next(0, n);
+				while (t1 == t2)
+				{
+					t2 = random.Next(0, n);
+				}
+
+				Tabel tabel1 = tabels[t1];
+				Tabel tabel2 = tabels[t2];
+
+				string[] t1_split = tabel1.Nama.Split("_");
+				string[] t2_split = tabel2.Nama.Split("_");
+
+				string label = $"Attribut_{t1_split[1]}_{t2_split[1]}";
+				Relasi relasi = new Relasi(label, tabel1, tabel2);
+
+				relasis.Add(relasi);
+			}
+
+			return relasis;
+		}
+
+		static void GenerateFileRelation(int n, List<Relasi> relasis)
+		{
+      var file = new FileInfo(DirectoryFolder + "/Relasi.xls");
+
+			using (var package = new ExcelPackage(file))
+			{
+				var sheet = package.Workbook.Worksheets.Add("Sheet 1");
+
+				sheet.Cells["A1"].Value = "Nama Label";
+				sheet.Cells["B1"].Value = "Tabel 1";
+				sheet.Cells["C1"].Value = "Tabel 2";
+
+				for (int i = 0; i < relasis.Count; i++)
+				{
+					var r = relasis[i];
+					int loc = i + 2;
+
+					sheet.Cells[$"A{loc}"].Value = r.Nama;
+					sheet.Cells[$"B{loc}"].Value = r.Tabel1.Nama;
+					sheet.Cells[$"C{loc}"].Value = r.Tabel2.Nama;
+				}
+
+				package.Save();
+			}
 		}
 	}
 }
