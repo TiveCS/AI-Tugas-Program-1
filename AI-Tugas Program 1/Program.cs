@@ -68,6 +68,7 @@ namespace AI_Tugas_Program_1
 		// MAIN-MAIN
 		static void Main(string[] args)
 		{
+			
 			string input = Console.ReadLine();
 			int n = Int32.Parse(input);
 
@@ -75,6 +76,58 @@ namespace AI_Tugas_Program_1
 			
 			GenerateFileTable(n, tabels);
 			GenerateFileRelation(n, tabels);
+		}
+
+		static void Menu()
+		{
+			Console.WriteLine("=== Program Menu ===");
+			Console.WriteLine(" ");
+			Console.WriteLine("1. Generate List Tabel");
+			Console.WriteLine("2. Generate List Relasi");
+			Console.WriteLine("3. Save List Tabel");
+			Console.WriteLine("4. Save List Relasi");
+			Console.WriteLine("5. Searching A*");
+			Console.WriteLine("6. Searching Greedy");
+			Console.WriteLine("7. Show List Tabel");
+			Console.WriteLine("8. Show List Relasi");
+			Console.WriteLine("9. Show List Tabel from File");
+			Console.WriteLine("10. Show List Relasi from File");
+			Console.WriteLine("0. Exit");
+			Console.WriteLine(" ");
+			Console.Write("Pilih Menu: ");
+
+			string input = Console.ReadLine();
+			int menu = Int32.Parse(input);
+
+			switch (menu)
+			{
+				case 1:
+					break;
+				case 2:
+					break;
+				case 3:
+					break;
+				case 4:
+					break;
+				case 5:
+					break;
+				case 6:
+					break;
+				case 7:
+					break;
+				case 8:
+					break;
+				case 9:
+					break;
+				case 10:
+					break;
+				case 0:
+				default:
+					Console.WriteLine(" ");
+					Console.WriteLine("Program Stop!");
+					return;
+			}
+			Menu();
 		}
 
 		static string DirectoryFolder => Path.GetFullPath(Directory.GetCurrentDirectory() + "/../../../");
@@ -140,8 +193,7 @@ namespace AI_Tugas_Program_1
 
 		static void GenerateFileRelation(int n, List<Tabel> tabels)
 		{
-			var file = new FileInfo(DirectoryFolder + "/Relasi.xls");
-			
+			var file = new FileInfo(DirectoryFolder + "/Table.xls");
 
 		}
 	}
