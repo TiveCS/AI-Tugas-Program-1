@@ -37,13 +37,19 @@ namespace AI_Tugas_Program_1
 
 		class Tabel
 		{
+			private static Random random = new Random();
+
 			public string Nama { get; set; }
 			public Kordinat Kordinat { get; set; }
+			public List<Tabel> Relasi { get; set; }
+			public int MaxRelasi { get; set; }
 
 			public Tabel(string nama, int x, int y)
 			{
 				Nama = nama;
 				Kordinat = new Kordinat(this, x, y);
+				Relasi = new List<Tabel>();
+				MaxRelasi = random.Next(3, 5);
 			}
 
 			public double Jarak(Tabel other)
@@ -61,91 +67,53 @@ namespace AI_Tugas_Program_1
 
 			public override string ToString()
 			{
-				return $"{Nama}: ({Kordinat.X}, {Kordinat.Y})";
+				string relasi = "";
+				string space = "";
+				foreach (Tabel other in Relasi)
+				{
+					relasi += space + other.Nama;
+					space = ", ";
+				}
+
+				return $"[{Nama}: ({Kordinat.X}, {Kordinat.Y}), Relasi: ({relasi})]";
 			}
 		}
-		
+
 		class Relasi
-        {
+		{
+			public string Label { get; set; }
+			public Tabel Tabel1 { get; set; }
+			public Tabel Tabel2 { get; set; }
 
-            public string Nama { get; set; }
-
-            public Tabel Tabel1 { get; set; }
-
-            public Tabel Tabel2 { get; set; }
-
-			public Relasi(string nama, Tabel tabel1, Tabel tabel2)
+			public Relasi(Tabel tabel1, Tabel tabel2)
 			{
-				Nama = nama;
 				Tabel1 = tabel1;
 				Tabel2 = tabel2;
+
+				string[] split1 = tabel1.Nama.Split("_"), split2 = tabel2.Nama.Split("_");
+				Label = $"Attribute_{split1[1]}_{split2[1]}";
 			}
-        }
+
+			public override string ToString()
+			{
+				return $"[{Label}: ({Tabel1.Nama}, {Tabel2.Nama})]";
+			}
+		}
 
 		// MAIN-MAIN
 		static void Main(string[] args)
 		{
-			
+
+			ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+
 			string input = Console.ReadLine();
 			int n = Int32.Parse(input);
 
 			List<Tabel> tabels = GenerateListTabel(n);
-			List<Relasi> relasis = GenerateListRelasi(n, tabels);
+			List<Relasi> relasis = GenerateRelasi(tabels);
 
 			GenerateFileTable(n, tabels);
-			GenerateFileRelation(n, relasis);
-		}
-
-		static void Menu()
-		{
-			Console.WriteLine("=== Program Menu ===");
-			Console.WriteLine(" ");
-			Console.WriteLine("1. Generate List Tabel");
-			Console.WriteLine("2. Generate List Relasi");
-			Console.WriteLine("3. Save List Tabel");
-			Console.WriteLine("4. Save List Relasi");
-			Console.WriteLine("5. Searching A*");
-			Console.WriteLine("6. Searching Greedy");
-			Console.WriteLine("7. Show List Tabel");
-			Console.WriteLine("8. Show List Relasi");
-			Console.WriteLine("9. Show List Tabel from File");
-			Console.WriteLine("10. Show List Relasi from File");
-			Console.WriteLine("0. Exit");
-			Console.WriteLine(" ");
-			Console.Write("Pilih Menu: ");
-
-			string input = Console.ReadLine();
-			int menu = Int32.Parse(input);
-
-			switch (menu)
-			{
-				case 1:
-					break;
-				case 2:
-					break;
-				case 3:
-					break;
-				case 4:
-					break;
-				case 5:
-					break;
-				case 6:
-					break;
-				case 7:
-					break;
-				case 8:
-					break;
-				case 9:
-					break;
-				case 10:
-					break;
-				case 0:
-				default:
-					Console.WriteLine(" ");
-					Console.WriteLine("Program Stop!");
-					return;
-			}
-			Menu();
+			GenerateFileRelation(relasis);
 		}
 
 		static string DirectoryFolder => Path.GetFullPath(Directory.GetCurrentDirectory() + "/../../../");
@@ -182,6 +150,45 @@ namespace AI_Tugas_Program_1
 			return list;
 		}
 
+		static List<Relasi> GenerateRelasi(List<Tabel> tabels)
+		{
+			List<Relasi> relasis = new List<Relasi>();
+			Random random = new Random();
+
+			List<Tabel> copyTabels = new List<Tabel>(tabels);
+			foreach (var tabel in tabels)
+			{
+				if (!copyTabels.Contains(tabel)) continue;
+
+				while (tabel.Relasi.Count < tabel.MaxRelasi)
+				{
+					if (copyTabels.Count <= 1) break;
+
+					Tabel select;
+					do
+					{
+						int rn = random.Next(0, copyTabels.Count);
+						select = copyTabels[rn];
+					} while (select == tabel || tabel.Relasi.Contains(select));
+
+					tabel.Relasi.Add(select);
+					select.Relasi.Add(tabel);
+
+					if (select.Relasi.Count == select.MaxRelasi)
+					{
+						copyTabels.Remove(select);
+					}
+
+					Relasi relasi = new Relasi(tabel, select);
+					relasis.Add(relasi);
+				}
+
+				copyTabels.Remove(tabel);
+			}
+
+			return relasis;
+		}
+
 		static void GenerateFileTable(int n, List<Tabel> tabels)
 		{
 
@@ -189,7 +196,8 @@ namespace AI_Tugas_Program_1
 
 			using (var package = new ExcelPackage(file))
 			{
-				var sheet = package.Workbook.Worksheets.Add("Sheet 1");
+				ExcelWorksheet sheet = package.Workbook.Worksheets["Sheet 1"];
+				if (sheet == null) sheet = package.Workbook.Worksheets.Add("Sheet 1");
 
 				sheet.Cells["A1"].Value = "Table_Name";
 				sheet.Cells["B1"].Value = "X";
@@ -210,56 +218,29 @@ namespace AI_Tugas_Program_1
 
 		}
 
-		static List<Relasi> GenerateListRelasi(int n, List<Tabel> tabels)
+		static void GenerateFileRelation(List<Relasi> relasis)
 		{
-			List<Relasi> relasis = new List<Relasi>();
-			Random random = new Random();
-
-			for (int i = 0; i < n; i++)
-			{
-				int t1 = random.Next(0, n), t2 = random.Next(0, n);
-				while (t1 == t2)
-				{
-					t2 = random.Next(0, n);
-				}
-
-				Tabel tabel1 = tabels[t1];
-				Tabel tabel2 = tabels[t2];
-
-				string[] t1_split = tabel1.Nama.Split("_");
-				string[] t2_split = tabel2.Nama.Split("_");
-
-				string label = $"Attribut_{t1_split[1]}_{t2_split[1]}";
-				Relasi relasi = new Relasi(label, tabel1, tabel2);
-
-				relasis.Add(relasi);
-			}
-
-			return relasis;
-		}
-
-		static void GenerateFileRelation(int n, List<Relasi> relasis)
-		{
-      var file = new FileInfo(DirectoryFolder + "/Relasi.xls");
+			var file = new FileInfo(DirectoryFolder + "/Relasi.xls");
 
 			using (var package = new ExcelPackage(file))
 			{
-				var sheet = package.Workbook.Worksheets.Add("Sheet 1");
+				ExcelWorksheet sheet = package.Workbook.Worksheets["Sheet 1"];
+				if (sheet == null) sheet = package.Workbook.Worksheets.Add("Sheet 1");
 
-				sheet.Cells["A1"].Value = "Nama Label";
-				sheet.Cells["B1"].Value = "Tabel 1";
-				sheet.Cells["C1"].Value = "Tabel 2";
+				sheet.Cells["A1"].Value = "Relasi_Name";
+				sheet.Cells["B1"].Value = "Tabel_1";
+				sheet.Cells["C1"].Value = "Tabel_2";
+
 
 				for (int i = 0; i < relasis.Count; i++)
 				{
-					var r = relasis[i];
+					var relasi = relasis[i];
 					int loc = i + 2;
 
-					sheet.Cells[$"A{loc}"].Value = r.Nama;
-					sheet.Cells[$"B{loc}"].Value = r.Tabel1.Nama;
-					sheet.Cells[$"C{loc}"].Value = r.Tabel2.Nama;
+					sheet.Cells[$"A{loc}"].Value = relasi.Label;
+					sheet.Cells[$"B{loc}"].Value = relasi.Tabel1.Nama;
+					sheet.Cells[$"C{loc}"].Value = relasi.Tabel2.Nama;
 				}
-
 				package.Save();
 			}
 		}
