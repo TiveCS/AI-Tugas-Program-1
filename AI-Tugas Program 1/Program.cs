@@ -118,13 +118,15 @@ namespace AI_Tugas_Program_1
 
 		static Tabel GetTabel(List<Tabel> tabels, string nama) => tabels.Find(x => x.Nama.Equals(nama));	
 
-		static void SearchingAStar(List<Tabel> tabels, List<Relasi> relasis, string start, string goal)
+		static void SearchingGreedy(List<Tabel> tabels, List<Relasi> relasis, string start, string goal)
 		{
 			Tabel tabelStart = GetTabel(tabels, start), tabelGoal = GetTabel(tabels, goal);
 
+			HashSet<Tabel> open = new HashSet<Tabel>(), closed = new HashSet<Tabel>();
+			
 			if (tabelStart != null && tabelGoal != null)
 			{
-				// Searching here...
+				
 			}
 		}
 
