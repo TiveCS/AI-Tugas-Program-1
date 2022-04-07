@@ -112,8 +112,81 @@ namespace AI_Tugas_Program_1
 			List<Tabel> tabels = GenerateListTabel(n);
 			List<Relasi> relasis = GenerateRelasi(tabels);
 
-			GenerateFileTable(n, tabels);
-			GenerateFileRelation(relasis);
+			SearchingGreedy(tabels, relasis, "Tabel_1", "Tabel_10");
+
+			//GenerateFileTable(n, tabels);
+			//GenerateFileRelation(relasis);
+		}
+
+		static Tabel GetTabel(List<Tabel> tabels, string nama) => tabels.Find(x => x.Nama.Equals(nama));	
+
+		static void SearchingGreedy(List<Tabel> tabels, List<Relasi> relasis, string start, string goal)
+		{
+			Tabel tabelStart = GetTabel(tabels, start), tabelGoal = GetTabel(tabels, goal);
+
+			List<Tabel> open = new List<Tabel>(), closed = new List<Tabel>();
+			
+			if (tabelStart != null && tabelGoal != null)
+			{
+				Tabel current = tabelStart;
+				closed.Add(current);
+
+				foreach (var item in relasis)
+				{
+					Console.WriteLine(item.ToString());
+				}
+				Console.WriteLine(" ");
+
+				while (current != tabelGoal)
+				{
+					List<Relasi> rs = GatherRelasi(relasis, closed, current);
+
+					double lowest = -1;
+					Tabel lowestTabel = null;
+					foreach (var item in rs)
+					{
+						Console.WriteLine(item);
+
+						Tabel reverse = current == item.Tabel1 ? item.Tabel2 : item.Tabel1;
+						double value = current.Jarak(reverse);
+						if (lowest == -1)
+						{
+							lowest = value;
+							lowestTabel = reverse;
+						}else if (tabelGoal == reverse)
+						{
+							lowest = value;
+							lowestTabel = reverse;
+							current = reverse;
+							Console.WriteLine(item.Tabel1.Nama + " - " + item.Tabel2.Nama + " ==> " + value);
+							Console.WriteLine("Found goal...");
+							break;
+						}else if (lowest > value)
+						{
+							lowest = value;
+							lowestTabel = reverse;
+						}
+						Console.WriteLine(item.Tabel1.Nama + " - " + item.Tabel2.Nama + " ==> " + value);
+					}
+					Console.WriteLine("Lowest: " + lowestTabel);
+					Console.WriteLine(" ");
+
+					current = lowestTabel;
+					closed.Add(current);
+				}
+
+				Console.WriteLine(" \nResult:");
+				foreach (var item in closed)
+				{
+					Console.Write($"{item.Nama} - ");
+				}
+			}
+		}
+
+		static List<Relasi> GatherRelasi(List<Relasi> relasis, List<Tabel> closed, Tabel tabel)
+		{
+			return relasis.FindAll(x => (x.Tabel1 == tabel && tabel.Relasi.Contains(x.Tabel2) && !closed.Contains(x.Tabel2)) ||
+										(x.Tabel2 == tabel && tabel.Relasi.Contains(x.Tabel1) && !closed.Contains(x.Tabel1)));
 		}
 		static Tabel GetTabel(List<Tabel> tabels, string nama) => tabels.Find(x => x.Nama.Equals(nama));
 
