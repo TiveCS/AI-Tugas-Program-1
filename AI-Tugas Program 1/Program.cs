@@ -112,20 +112,107 @@ namespace AI_Tugas_Program_1
 			List<Tabel> tabels = GenerateListTabel(n);
 			List<Relasi> relasis = GenerateRelasi(tabels);
 
-			GenerateFileTable(n, tabels);
-			GenerateFileRelation(relasis);
+			SearchingAstar(tabels, relasis, "Tabel_1", "Tabel_10");
+
+			//GenerateFileTable(n, tabels);
+			//GenerateFileRelation(relasis);
 		}
 
-		static Tabel GetTabel(List<Tabel> tabels, string nama) => tabels.Find(x => x.Nama.Equals(nama));	
+		static Tabel GetTabel(List<Tabel> tabels, string nama) => tabels.Find(x => x.Nama.Equals(nama));
 
-		static void SearchingAStar(List<Tabel> tabels, List<Relasi> relasis, string start, string goal)
+		static void SearchingAstar(List<Tabel> tabels, List<Relasi> relasis, string start, string goal)
 		{
 			Tabel tabelStart = GetTabel(tabels, start), tabelGoal = GetTabel(tabels, goal);
 
+			List<Tabel> open = new List<Tabel>(), closed = new List<Tabel>();
+
 			if (tabelStart != null && tabelGoal != null)
 			{
-				// Searching here...
+				Tabel heuristic = tabelStart;
+				Tabel real = tabelStart;
+				closed.Add(heuristic);
+				closed.Add(real);
+
+				foreach (var item in relasis)
+				{
+					Console.WriteLine(item.ToString());
+				}
+				Console.WriteLine(" ");
+
+				while (heuristic != tabelGoal && real != tabelGoal)
+				{
+					List<Relasi> rs = GatherRelasi(relasis, closed, heuristic, real);
+
+					double lowest = -1;
+					double lowest2 = -1;
+					Tabel lowestTabel = null;
+					Tabel lowestTabel2 = null;
+
+					foreach (var item in rs)
+					{
+						Console.WriteLine(item);
+
+						Tabel reverse = heuristic == item.Tabel1 ? item.Tabel2 : item.Tabel1;
+						Tabel reverse2 = real == item.Tabel1 ? item.Tabel2 : item.Tabel1;
+						double value = heuristic.Jarak(reverse);
+						double value2 = real.Jarak(reverse2);
+
+						if (lowest == -1 && lowest2 == -1)
+						{
+							lowest = value;
+							lowest2 = value2;
+							lowestTabel = reverse;
+							lowestTabel2 = reverse2;
+						}
+						else if (tabelGoal == reverse && tabelGoal == reverse2)
+						{
+							lowest = value;
+							lowest2 = value2;
+							lowestTabel = reverse;
+							lowestTabel2 = reverse2;
+
+							heuristic = reverse;
+							real = reverse2;
+							Console.WriteLine("Real Cost (g) = " + item.Tabel1.Nama + " - " + item.Tabel2.Nama + " ==> " + value);
+							Console.WriteLine("Heursitik Cost (h) = " + item.Tabel1.Nama + " - " + item.Tabel2.Nama + " ==> " + value2);
+							double hasil = value + value2;
+							Console.WriteLine("results = g + h ==> " + hasil);
+							Console.WriteLine("Found goal...");
+							break;
+						}
+						else if (lowest > value && lowest2 > value2)
+						{
+							lowest = value;
+							lowest2 = value2;
+							lowestTabel = reverse;
+							lowestTabel2 = reverse2;
+						}
+						Console.WriteLine("Real Cost (g) = " + item.Tabel1.Nama + " - " + item.Tabel2.Nama + " ==> " + value);
+						Console.WriteLine("Heursitik Cost (h) = " + item.Tabel1.Nama + " - " + item.Tabel2.Nama + " ==> " + value2);
+						double hasil2 = value + value2;
+						Console.WriteLine("results = g + h ==> " + hasil2);
+					}
+					Console.WriteLine("Lowest: " + lowestTabel);
+					Console.WriteLine(" ");
+
+					heuristic = lowestTabel;
+					//current2 = lowestTabel2;
+					closed.Add(heuristic);
+					//closed.Add(current2);
+				}
+
+				Console.WriteLine(" \nResult:");
+				foreach (var item in closed)
+				{
+					Console.Write($"{item.Nama} - ");
+				}
 			}
+		}
+
+		static List<Relasi> GatherRelasi(List<Relasi> relasis, List<Tabel> closed, Tabel tabel, Tabel tabel2)
+		{
+			return relasis.FindAll(x => (x.Tabel1 == tabel && tabel.Relasi.Contains(x.Tabel2) && !closed.Contains(x.Tabel2)) ||
+										(x.Tabel2 == tabel && tabel.Relasi.Contains(x.Tabel1) && !closed.Contains(x.Tabel1)));
 		}
 
 		static string DirectoryFolder => Path.GetFullPath(Directory.GetCurrentDirectory() + "/../../../");
