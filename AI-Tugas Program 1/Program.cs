@@ -128,10 +128,8 @@ namespace AI_Tugas_Program_1
 
 			if (tabelStart != null && tabelGoal != null)
 			{
-				Tabel heuristic = tabelStart;
-				Tabel real = tabelStart;
-				closed.Add(heuristic);
-				closed.Add(real);
+				Tabel current = tabelStart;
+				closed.Add(current);
 
 				foreach (var item in relasis)
 				{
@@ -139,66 +137,52 @@ namespace AI_Tugas_Program_1
 				}
 				Console.WriteLine(" ");
 
-				while (heuristic != tabelGoal && real != tabelGoal)
+				while (current != tabelGoal)
 				{
-					List<Relasi> rs = GatherRelasi(relasis, closed, heuristic, real);
+					List<Relasi> rs = GatherRelasi(relasis, closed, current);
 
 					double lowest = -1;
-					double lowest2 = -1;
 					Tabel lowestTabel = null;
-					Tabel lowestTabel2 = null;
 
 					foreach (var item in rs)
 					{
 						Console.WriteLine(item);
 
-						Tabel reverse = heuristic == item.Tabel1 ? item.Tabel2 : item.Tabel1;
-						Tabel reverse2 = real == item.Tabel1 ? item.Tabel2 : item.Tabel1;
-						double value = heuristic.Jarak(reverse);
-						double value2 = real.Jarak(reverse2);
+						Tabel reverse = current == item.Tabel1 ? item.Tabel2 : item.Tabel1;
+						double heuristic = reverse.Jarak(tabelGoal);
+						double real = current.Jarak(reverse);
+						double hasil = real + heuristic;
 
-						if (lowest == -1 && lowest2 == -1)
+						if (lowest == -1)
 						{
-							lowest = value;
-							lowest2 = value2;
+							lowest = hasil;
 							lowestTabel = reverse;
-							lowestTabel2 = reverse2;
 						}
-						else if (tabelGoal == reverse && tabelGoal == reverse2)
+						else if (tabelGoal == reverse)
 						{
-							lowest = value;
-							lowest2 = value2;
+							lowest = hasil;
 							lowestTabel = reverse;
-							lowestTabel2 = reverse2;
-
-							heuristic = reverse;
-							real = reverse2;
-							Console.WriteLine("Real Cost (g) = " + item.Tabel1.Nama + " - " + item.Tabel2.Nama + " ==> " + value);
-							Console.WriteLine("Heursitik Cost (h) = " + item.Tabel1.Nama + " - " + item.Tabel2.Nama + " ==> " + value2);
-							double hasil = value + value2;
+							current = reverse;
+							Console.WriteLine("Real Cost (g) = " + item.Tabel1.Nama + " - " + item.Tabel2.Nama + " ==> " + real);
+							Console.WriteLine("Heursitik Cost (h) = " + item.Tabel1.Nama + " - " + item.Tabel2.Nama + " ==> " + heuristic);
 							Console.WriteLine("results = g + h ==> " + hasil);
 							Console.WriteLine("Found goal...");
 							break;
 						}
-						else if (lowest > value && lowest2 > value2)
+						else if (lowest > hasil)
 						{
-							lowest = value;
-							lowest2 = value2;
+							lowest = hasil;
 							lowestTabel = reverse;
-							lowestTabel2 = reverse2;
 						}
-						Console.WriteLine("Real Cost (g) = " + item.Tabel1.Nama + " - " + item.Tabel2.Nama + " ==> " + value);
-						Console.WriteLine("Heursitik Cost (h) = " + item.Tabel1.Nama + " - " + item.Tabel2.Nama + " ==> " + value2);
-						double hasil2 = value + value2;
-						Console.WriteLine("results = g + h ==> " + hasil2);
+						Console.WriteLine("Real Cost (g) = " + item.Tabel1.Nama + " - " + item.Tabel2.Nama + " ==> " + real);
+						Console.WriteLine("Heursitik Cost (h) = " + item.Tabel1.Nama + " - " + item.Tabel2.Nama + " ==> " + heuristic);
+						Console.WriteLine("results = g + h ==> " + hasil);
 					}
 					Console.WriteLine("Lowest: " + lowestTabel);
 					Console.WriteLine(" ");
 
-					heuristic = lowestTabel;
-					//current2 = lowestTabel2;
-					closed.Add(heuristic);
-					//closed.Add(current2);
+					current = lowestTabel;
+					closed.Add(current);
 				}
 
 				Console.WriteLine(" \nResult:");
@@ -209,7 +193,7 @@ namespace AI_Tugas_Program_1
 			}
 		}
 
-		static List<Relasi> GatherRelasi(List<Relasi> relasis, List<Tabel> closed, Tabel tabel, Tabel tabel2)
+		static List<Relasi> GatherRelasi(List<Relasi> relasis, List<Tabel> closed, Tabel tabel)
 		{
 			return relasis.FindAll(x => (x.Tabel1 == tabel && tabel.Relasi.Contains(x.Tabel2) && !closed.Contains(x.Tabel2)) ||
 										(x.Tabel2 == tabel && tabel.Relasi.Contains(x.Tabel1) && !closed.Contains(x.Tabel1)));
