@@ -114,8 +114,6 @@ namespace AI_Tugas_Program_1
 
 			SearchingAstar(tabels, relasis, "Tabel_1", "Tabel_10");
 
-			//GenerateFileTable(n, tabels);
-			//GenerateFileRelation(relasis);
 		}
 
 		static Tabel GetTabel(List<Tabel> tabels, string nama) => tabels.Find(x => x.Nama.Equals(nama));
