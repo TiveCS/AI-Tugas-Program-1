@@ -188,19 +188,7 @@ namespace AI_Tugas_Program_1
 			return relasis.FindAll(x => (x.Tabel1 == tabel && tabel.Relasi.Contains(x.Tabel2) && !closed.Contains(x.Tabel2)) ||
 										(x.Tabel2 == tabel && tabel.Relasi.Contains(x.Tabel1) && !closed.Contains(x.Tabel1)));
 		}
-		static Tabel GetTabel(List<Tabel> tabels, string nama) => tabels.Find(x => x.Nama.Equals(nama));
 
-		static void SearchingBFS(List<Tabel> tabels, List<Relasi> relasis, string start, string goal)
-		{
-			Tabel tabelStart = GetTabel(tabels, start), tabelGoal = GetTabel(tabels, goal);
-
-			HashSet<Tabel> open = new HashSet<Tabel>(), closed = new HashSet<Tabel>();
-
-			if (tabelStart != null && tabelGoal != null)
-			{
-				//dsini
-			}
-		}
 
 		static string DirectoryFolder => Path.GetFullPath(Directory.GetCurrentDirectory() + "/../../../");
 
