@@ -113,6 +113,7 @@ namespace AI_Tugas_Program_1
 			List<Relasi> relasis = GenerateRelasi(tabels);
 
 			SearchingGreedy(tabels, relasis, "Tabel_1", "Tabel_10");
+			SearchingAstar(tabels, relasis, "Tabel_1", "Tabel_10");
 
 			//GenerateFileTable(n, tabels);
 			//GenerateFileRelation(relasis);
@@ -169,6 +170,79 @@ namespace AI_Tugas_Program_1
 							lowestTabel = reverse;
 						}
 						Console.WriteLine(item.Tabel1.Nama + " - " + item.Tabel2.Nama + " ==> " + value);
+					}
+					Console.WriteLine("Lowest: " + lowestTabel);
+					Console.WriteLine(" ");
+
+					current = lowestTabel;
+					closed.Add(current);
+				}
+
+				Console.WriteLine(" \nResult:");
+				foreach (var item in closed)
+				{
+					Console.Write($"{item.Nama} - ");
+				}
+			}
+		}
+
+		static void SearchingAstar(List<Tabel> tabels, List<Relasi> relasis, string start, string goal)
+		{
+			Tabel tabelStart = GetTabel(tabels, start), tabelGoal = GetTabel(tabels, goal);
+
+			List<Tabel> open = new List<Tabel>(), closed = new List<Tabel>();
+
+			if (tabelStart != null && tabelGoal != null)
+			{
+				Tabel current = tabelStart;
+				closed.Add(current);
+
+				foreach (var item in relasis)
+				{
+					Console.WriteLine(item.ToString());
+				}
+				Console.WriteLine(" ");
+
+				while (current != tabelGoal)
+				{
+					List<Relasi> rs = GatherRelasi(relasis, closed, current);
+
+					double lowest = -1;
+					Tabel lowestTabel = null;
+
+					foreach (var item in rs)
+					{
+						Console.WriteLine(item);
+
+						Tabel reverse = current == item.Tabel1 ? item.Tabel2 : item.Tabel1;
+						double heuristic = reverse.Jarak(tabelGoal);
+						double real = current.Jarak(reverse);
+						double hasil = real + heuristic;
+
+						if (lowest == -1)
+						{
+							lowest = hasil;
+							lowestTabel = reverse;
+						}
+						else if (tabelGoal == reverse)
+						{
+							lowest = hasil;
+							lowestTabel = reverse;
+							current = reverse;
+							Console.WriteLine("Real Cost (g) = " + item.Tabel1.Nama + " - " + item.Tabel2.Nama + " ==> " + real);
+							Console.WriteLine("Heursitik Cost (h) = " + item.Tabel1.Nama + " - " + item.Tabel2.Nama + " ==> " + heuristic);
+							Console.WriteLine("results = g + h ==> " + hasil);
+							Console.WriteLine("Found goal...");
+							break;
+						}
+						else if (lowest > hasil)
+						{
+							lowest = hasil;
+							lowestTabel = reverse;
+						}
+						Console.WriteLine("Real Cost (g) = " + item.Tabel1.Nama + " - " + item.Tabel2.Nama + " ==> " + real);
+						Console.WriteLine("Heursitik Cost (h) = " + item.Tabel1.Nama + " - " + item.Tabel2.Nama + " ==> " + heuristic);
+						Console.WriteLine("results = g + h ==> " + hasil);
 					}
 					Console.WriteLine("Lowest: " + lowestTabel);
 					Console.WriteLine(" ");
