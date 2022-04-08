@@ -139,8 +139,10 @@ namespace AI_Tugas_Program_1
 
 				while (current != tabelGoal)
 				{
+					// Mengumpulkan relasi
 					List<Relasi> rs = GatherRelasi(relasis, closed, current);
 
+					// Variabel pembanding state old
 					double lowest = -1;
 					Tabel lowestTabel = null;
 					foreach (var item in rs)
@@ -148,12 +150,12 @@ namespace AI_Tugas_Program_1
 						Console.WriteLine(item);
 
 						Tabel reverse = current == item.Tabel1 ? item.Tabel2 : item.Tabel1;
-						double value = current.Jarak(reverse);
-						if (lowest == -1)
+						double value = reverse.Jarak(tabelGoal); // Nilai heuristik
+						if (lowest == -1) // Jika state pertama kali jalan
 						{
 							lowest = value;
 							lowestTabel = reverse;
-						}else if (tabelGoal == reverse)
+						}else if (tabelGoal == reverse) // Node child adalah goal
 						{
 							lowest = value;
 							lowestTabel = reverse;
@@ -161,7 +163,7 @@ namespace AI_Tugas_Program_1
 							Console.WriteLine(item.Tabel1.Nama + " - " + item.Tabel2.Nama + " ==> " + value);
 							Console.WriteLine("Found goal...");
 							break;
-						}else if (lowest > value)
+						}else if (lowest > value) // Jika tidak ditemukan goal dan bandingkan nilai state old dengan new
 						{
 							lowest = value;
 							lowestTabel = reverse;
