@@ -100,6 +100,12 @@ namespace AI_Tugas_Program_1
 			}
 		}
 
+		public enum MetodeSearch
+		{
+			Greedy = 1,
+			AStar
+		}
+
 		// MAIN-MAIN
 		static void Main(string[] args)
 		{
@@ -113,28 +119,50 @@ namespace AI_Tugas_Program_1
 			List<Tabel> tabels = GenerateListTabel(n);
 			List<Relasi> relasis = GenerateRelasi(tabels);
 
-			foreach (var item in relasis)
-			{
-				Console.WriteLine(item);
+			GenerateFileTable(tabels);
+			GenerateFileRelation(relasis);
+
+			Console.Write("Masukkan nama Tabel start: ");
+			string start = Console.ReadLine();
+			Tabel t1 = GetTabel(tabels, start);
+			if (t1 == null) { 
+				Console.WriteLine("Tabel tidak ditemukan!");
+				return;
 			}
 
-			/*Console.Write("Masukkan Tabel start: ");
-			string start = Console.ReadLine();
-			Console.Write("Masukkan Tabel goal: ");
+			Console.Write("Masukkan nama Tabel goal: ");
 			string goal = Console.ReadLine();
+			Tabel t2 = GetTabel(tabels, goal);
+			if (t2 == null)
+			{
+				Console.WriteLine("Tabel tidak ditemukan!");
+				return;
+			}
 
-			Console.Write("Masukkan Metode pencarian (Greedy / A*): ");
-			string metode = Console.ReadLine();*/
+			Console.Write("Masukkan Metode pencarian (Greedy / AStar): ");
+			string metode = Console.ReadLine();
+			MetodeSearch metodeSearch;
+			Enum.TryParse(metode, out metodeSearch);
+
+			switch (metodeSearch)
+			{
+				case MetodeSearch.Greedy:
+					SearchingGreedy(tabels, relasis, start, goal);
+					break;
+				case MetodeSearch.AStar:
+					SearchingAstar(tabels, relasis, start, goal);
+					break;
+			}
 		}
 
-		static Tabel GetTabel(List<Tabel> tabels, string nama) => tabels.Find(x => x.Nama.Equals(nama));	
+		static Tabel GetTabel(List<Tabel> tabels, string nama) => tabels.Find(x => x.Nama.Equals(nama));
 
 		static void SearchingGreedy(List<Tabel> tabels, List<Relasi> relasis, string start, string goal)
 		{
 			Tabel tabelStart = GetTabel(tabels, start), tabelGoal = GetTabel(tabels, goal);
 
 			List<Tabel> open = new List<Tabel>(), closed = new List<Tabel>();
-			
+
 			if (tabelStart != null && tabelGoal != null)
 			{
 				Tabel current = tabelStart;
@@ -164,7 +192,8 @@ namespace AI_Tugas_Program_1
 						{
 							lowest = value;
 							lowestTabel = reverse;
-						}else if (tabelGoal == reverse) // Node child adalah goal
+						}
+						else if (tabelGoal == reverse) // Node child adalah goal
 						{
 							lowest = value;
 							lowestTabel = reverse;
@@ -172,7 +201,8 @@ namespace AI_Tugas_Program_1
 							Console.WriteLine(item.Tabel1.Nama + " - " + item.Tabel2.Nama + " ==> " + value);
 							Console.WriteLine("Found goal...");
 							break;
-						}else if (lowest > value) // Jika tidak ditemukan goal dan bandingkan nilai state old dengan new
+						}
+						else if (lowest > value) // Jika tidak ditemukan goal dan bandingkan nilai state old dengan new
 						{
 							lowest = value;
 							lowestTabel = reverse;
@@ -336,13 +366,13 @@ namespace AI_Tugas_Program_1
 				{
 					copyTabel.RemoveAt(0);
 				}
-				
+
 			}
 
 			return relasis;
 		}
 
-		static void GenerateFileTable(int n, List<Tabel> tabels)
+		static void GenerateFileTable(List<Tabel> tabels)
 		{
 
 			var file = new FileInfo(DirectoryFolder + "/Table.xls");
