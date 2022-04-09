@@ -106,26 +106,25 @@ namespace AI_Tugas_Program_1
 
 			ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
 
+			Console.Write("Masukkan jumlah Tabel: ");
 			string input = Console.ReadLine();
-			int n = Int32.Parse(input);
+			int n = int.Parse(input);
 
 			List<Tabel> tabels = GenerateListTabel(n);
-			List<Relasi> relasis = GenerateRelasi(tabels);
+			List<Relasi> relasis = GenerateRelasiUpgrade(tabels);
 
-			//SearchingGreedy(tabels, relasis, "Tabel_1", "Tabel_10");
-			//SearchingAstar(tabels, relasis, "Tabel_1", "Tabel_10");
+			foreach (var item in relasis)
+			{
+				Console.WriteLine(item);
+			}
 
+			/*Console.Write("Masukkan Tabel start: ");
+			string start = Console.ReadLine();
+			Console.Write("Masukkan Tabel goal: ");
+			string goal = Console.ReadLine();
 
-			GenerateFileTable(n, tabels);
-			GenerateFileRelation(relasis);
-
-			tabels = ReadFromTable();
-			relasis = ReadFromRelasi(tabels);
-
-			foreach (Tabel tabel in tabels)
-            {
-				Console.WriteLine(tabel);
-            }
+			Console.Write("Masukkan Metode pencarian (Greedy / A*): ");
+			string metode = Console.ReadLine();*/
 		}
 
 		static Tabel GetTabel(List<Tabel> tabels, string nama) => tabels.Find(x => x.Nama.Equals(nama));	
@@ -301,7 +300,6 @@ namespace AI_Tugas_Program_1
 			for (int j = 0; j < n; j++)
 			{
 				string label = $"Tabel_{j + 1}";
-				string[] subs = label.Split(' ');
 				Tabel t = new Tabel(label, GenerateNumberMultipleFive(), GenerateNumberMultipleFive());
 
 				list.Add(t);
@@ -312,37 +310,33 @@ namespace AI_Tugas_Program_1
 		static List<Relasi> GenerateRelasi(List<Tabel> tabels)
 		{
 			List<Relasi> relasis = new List<Relasi>();
+
+			List<Tabel> copyTabel = new List<Tabel>(tabels);
 			Random random = new Random();
 
-			List<Tabel> copyTabels = new List<Tabel>(tabels);
-			foreach (var tabel in tabels)
+			while (copyTabel.Count > 1)
 			{
-				if (!copyTabels.Contains(tabel)) continue;
 
-				while (tabel.Relasi.Count < tabel.MaxRelasi)
+				Tabel t = copyTabel[0];
+				int dest = copyTabel.Count == 2 ? 1 : random.Next(1, copyTabel.Count);
+
+				Tabel destination = copyTabel[dest];
+
+				t.Relasi.Add(destination);
+				destination.Relasi.Add(t);
+
+				Relasi relasi = new Relasi(t, destination);
+				relasis.Add(relasi);
+
+				if (destination.Relasi.Count >= destination.MaxRelasi)
 				{
-					if (copyTabels.Count <= 1) break;
-
-					Tabel select;
-					do
-					{
-						int rn = random.Next(0, copyTabels.Count);
-						select = copyTabels[rn];
-					} while (select == tabel || tabel.Relasi.Contains(select));
-
-					tabel.Relasi.Add(select);
-					select.Relasi.Add(tabel);
-
-					if (select.Relasi.Count == select.MaxRelasi)
-					{
-						copyTabels.Remove(select);
-					}
-
-					Relasi relasi = new Relasi(tabel, select);
-					relasis.Add(relasi);
+					copyTabel.RemoveAt(dest);
 				}
-
-				copyTabels.Remove(tabel);
+				if (t.Relasi.Count >= t.MaxRelasi)
+				{
+					copyTabel.RemoveAt(0);
+				}
+				
 			}
 
 			return relasis;
