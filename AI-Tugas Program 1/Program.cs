@@ -358,6 +358,17 @@ namespace AI_Tugas_Program_1
 
 				Tabel destination = copyTabel[dest];
 
+				while (copyTabel.Count > 2 && t.Relasi.Contains(destination))
+				{
+					dest = random.Next(1, copyTabel.Count);
+					destination = copyTabel[dest];
+				}
+
+				if (copyTabel.Count <= 2 && t.Relasi.Contains(destination))
+				{
+					break;
+				}
+
 				t.Relasi.Add(destination);
 				destination.Relasi.Add(t);
 
