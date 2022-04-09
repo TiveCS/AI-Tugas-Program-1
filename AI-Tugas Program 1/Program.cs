@@ -111,7 +111,7 @@ namespace AI_Tugas_Program_1
 			int n = int.Parse(input);
 
 			List<Tabel> tabels = GenerateListTabel(n);
-			List<Relasi> relasis = GenerateRelasiUpgrade(tabels);
+			List<Relasi> relasis = GenerateRelasi(tabels);
 
 			foreach (var item in relasis)
 			{
