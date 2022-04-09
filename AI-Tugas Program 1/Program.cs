@@ -112,11 +112,20 @@ namespace AI_Tugas_Program_1
 			List<Tabel> tabels = GenerateListTabel(n);
 			List<Relasi> relasis = GenerateRelasi(tabels);
 
-			SearchingGreedy(tabels, relasis, "Tabel_1", "Tabel_10");
-			SearchingAstar(tabels, relasis, "Tabel_1", "Tabel_10");
+			//SearchingGreedy(tabels, relasis, "Tabel_1", "Tabel_10");
+			//SearchingAstar(tabels, relasis, "Tabel_1", "Tabel_10");
 
-			//GenerateFileTable(n, tabels);
-			//GenerateFileRelation(relasis);
+
+			GenerateFileTable(n, tabels);
+			GenerateFileRelation(relasis);
+
+			tabels = ReadFromTable();
+			relasis = ReadFromRelasi(tabels);
+
+			foreach (Tabel tabel in tabels)
+            {
+				Console.WriteLine(tabel);
+            }
 		}
 
 		static Tabel GetTabel(List<Tabel> tabels, string nama) => tabels.Find(x => x.Nama.Equals(nama));	
@@ -393,6 +402,71 @@ namespace AI_Tugas_Program_1
 				}
 				package.Save();
 			}
+		}
+		static List<Tabel> ReadFromTable()
+		{
+			List<Tabel> list = new List<Tabel>();
+
+			var file = new FileInfo(DirectoryFolder + "/Table.xls");
+
+			using (var package = new ExcelPackage(file))
+			{
+				ExcelWorksheet sheet = package.Workbook.Worksheets["Sheet 1"];
+				if (sheet == null) return list;
+
+				for (int i = 2; sheet.Cells[$"A{i}"].Value != null; i++)
+				{
+					string namaTabel = sheet.Cells[$"A{i}"].Value.ToString();
+					string rawX = sheet.Cells[$"B{i}"].Value.ToString();
+					string rawY = sheet.Cells[$"C{i}"].Value.ToString();
+
+					int x = int.Parse(rawX);
+					int y = int.Parse(rawY);
+
+					Tabel tabel = new Tabel(namaTabel, x, y);
+					list.Add(tabel);
+				}
+			}
+
+			return list;
+		}
+
+		static List<Relasi> ReadFromRelasi(List<Tabel> tabels)
+		{
+			// List relasi
+			List<Relasi> list = new List<Relasi>();
+
+
+			var file = new FileInfo(DirectoryFolder + "/Relasi.xls");
+
+			using (var package = new ExcelPackage(file))
+			{
+				ExcelWorksheet sheet = package.Workbook.Worksheets["Sheet 1"];
+				if (sheet == null) return list;
+
+				for (int i = 2; sheet.Cells[$"A{i}"].Value != null; i++)
+				{
+					// Ambil nama relasi dari file
+					string namaRelasi = sheet.Cells[$"A{i}"].Value.ToString();
+					// Ambil nama tabel 1 dari file
+					string namaTabel1 = sheet.Cells[$"B{i}"].Value.ToString();
+					// Ambil nama tabel 2 dari file
+					string namaTabel2 = sheet.Cells[$"C{i}"].Value.ToString();
+					// Ambil objek tabel 1 dari parameter tabels
+					Tabel tabel1 = tabels.Find(x => x.Nama == namaTabel1);
+					// Ambil objek tabel 2 dari parameter tabels
+					Tabel tabel2 = tabels.Find(y => y.Nama == namaTabel2);
+					// Buat objek relasi menggunakan (nama relasi, objek tabel 1, objek tabel 2)
+					Relasi relasi = new Relasi(tabel1, tabel2);
+					// Tambahkan tabel 2 ke relasi objek tabel 1
+					tabel1.Relasi.Add(tabel2);
+					// Tambahkan tabel 1 ke relasi objek tabel 2
+					tabel2.Relasi.Add(tabel1);
+					// Tambahkan objek relasi ke list relasi
+					list.Add(relasi);
+				}
+			}
+			return list;
 		}
 	}
 }
