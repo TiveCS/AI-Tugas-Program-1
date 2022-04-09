@@ -315,7 +315,7 @@ namespace AI_Tugas_Program_1
 		static int GenerateNumberMultipleFive()
 		{
 			Random random = new Random();
-			int num = random.Next(0, 200);
+			int num = random.Next(0, 400);
 
 			int leftover = num % 5;
 
