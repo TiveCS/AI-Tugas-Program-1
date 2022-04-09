@@ -120,9 +120,11 @@ namespace AI_Tugas_Program_1
 			List<Relasi> relasis = GenerateRelasi(tabels);
 
 			GenerateFileTable(tabels);
+			Console.WriteLine("Membuat file Tabel.xls...");
 			GenerateFileRelation(relasis);
+			Console.WriteLine("Membuat file Relasi.xls...");
 
-			Console.Write("Masukkan nama Tabel start: ");
+			Console.Write("\nMasukkan nama Tabel start: ");
 			string start = Console.ReadLine();
 			Tabel t1 = GetTabel(tabels, start);
 			if (t1 == null) { 
@@ -142,8 +144,9 @@ namespace AI_Tugas_Program_1
 			Console.Write("Masukkan Metode pencarian (Greedy / AStar): ");
 			string metode = Console.ReadLine();
 			MetodeSearch metodeSearch;
-			Enum.TryParse(metode, out metodeSearch);
+			Enum.TryParse(metode, true, out metodeSearch);
 
+			Console.WriteLine("\n");
 			switch (metodeSearch)
 			{
 				case MetodeSearch.Greedy:
@@ -168,6 +171,7 @@ namespace AI_Tugas_Program_1
 				Tabel current = tabelStart;
 				closed.Add(current);
 
+				Console.WriteLine("Menampilkan relasi: ");
 				foreach (var item in relasis)
 				{
 					Console.WriteLine(item.ToString());
@@ -235,6 +239,7 @@ namespace AI_Tugas_Program_1
 				Tabel current = tabelStart;
 				closed.Add(current);
 
+				Console.WriteLine("Menampilkan relasi: ");
 				foreach (var item in relasis)
 				{
 					Console.WriteLine(item.ToString());
@@ -294,6 +299,7 @@ namespace AI_Tugas_Program_1
 				{
 					Console.Write($"{item.Nama} - ");
 				}
+				Console.WriteLine("\n");
 			}
 		}
 
