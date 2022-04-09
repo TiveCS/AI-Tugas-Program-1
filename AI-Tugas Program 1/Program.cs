@@ -211,7 +211,7 @@ namespace AI_Tugas_Program_1
 							lowest = value;
 							lowestTabel = reverse;
 						}
-						Console.WriteLine(item.Tabel1.Nama + " - " + item.Tabel2.Nama + " ==> " + value);
+						Console.WriteLine(current.Nama + " - " + reverse.Nama + " ==> " + value);
 					}
 					Console.WriteLine("Lowest: " + lowestTabel);
 					Console.WriteLine(" ");
@@ -272,8 +272,8 @@ namespace AI_Tugas_Program_1
 							lowest = hasil;
 							lowestTabel = reverse;
 							current = reverse;
-							Console.WriteLine("Real Cost (g) = " + item.Tabel1.Nama + " - " + item.Tabel2.Nama + " ==> " + real);
-							Console.WriteLine("Heursitik Cost (h) = " + item.Tabel1.Nama + " - " + item.Tabel2.Nama + " ==> " + heuristic);
+							Console.WriteLine("Real Cost (g) = " + current.Nama + " - " + reverse.Nama + " ==> " + real);
+							Console.WriteLine("Heursitik Cost (h) = " + current.Nama + " - " + reverse.Nama + " ==> " + heuristic);
 							Console.WriteLine("results = g + h ==> " + hasil);
 							Console.WriteLine("Found goal...");
 							break;
@@ -283,8 +283,8 @@ namespace AI_Tugas_Program_1
 							lowest = hasil;
 							lowestTabel = reverse;
 						}
-						Console.WriteLine("Real Cost (g) = " + item.Tabel1.Nama + " - " + item.Tabel2.Nama + " ==> " + real);
-						Console.WriteLine("Heursitik Cost (h) = " + item.Tabel1.Nama + " - " + item.Tabel2.Nama + " ==> " + heuristic);
+						Console.WriteLine("Real Cost (g) = " + current.Nama + " - " + reverse.Nama + " ==> " + real);
+						Console.WriteLine("Heursitik Cost (h) = " + current.Nama + " - " + reverse.Nama + " ==> " + heuristic);
 						Console.WriteLine("results = g + h ==> " + hasil);
 					}
 					Console.WriteLine("Lowest: " + lowestTabel);
